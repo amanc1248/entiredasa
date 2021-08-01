@@ -119,10 +119,38 @@ const tailorCustomers = asyncHandler(async (req, res) => {
     }
   });
 });
+
+//@desc update tailor profile
+//@route PUT /api/tailor/profile
+//@access PRIVATE
+const updateTailorProfile = asyncHandler(async (req, res) => {
+  console.log("ControllerRan");
+  const { tailor_id, firstName, lastName, email, phone } = req.body;
+
+  let sql =
+    " UPDATE TAILOR SET first_name=?, last_name=?,email=?,phone=? where tailor_id = ?;select * from tailor join tailor_location on tailor.tailor_id = tailor_location.tailor_id join location on location.location_id = tailor_location.location_id where email=?;";
+  db.query(
+    sql,
+    [firstName, lastName, email, phone, tailor_id, email],
+    (err, result) => {
+      if (err) {
+        throw err;
+      }
+      if (result) {
+        console.log(result);
+        res.json(result[1][0]);
+      } else {
+        res.status(401).send({ Message: err });
+      }
+    }
+  );
+  // give he response
+});
 export {
   registerTailor,
   loginTailor,
   tailorSales,
   tailorOrders,
   tailorCustomers,
+  updateTailorProfile,
 };
